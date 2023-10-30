@@ -1,0 +1,70 @@
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import ApexCharts from "apexcharts";
+import "./results.css";
+
+const CHART_OPTIONS = {
+  chart: {
+    type: "bar",
+    height: "100%",
+  },
+  dataLabels: {
+    enabled: false,
+  },
+  plotOptions: {
+    bar: {
+      borderRadius: 4,
+      horizontal: true,
+    },
+  },
+  series: [],
+};
+
+function ResultsBarChart({ data, fieldName, numBars }) {
+  useEffect(() => {
+    const tops = data
+      .slice()
+      .sort((a, b) => {
+        return b[fieldName] - a[fieldName];
+      })
+      .map((row) => row[fieldName])
+      .slice(0, numBars);
+
+    const options = {
+      ...CHART_OPTIONS,
+      series: [
+        {
+          data: tops,
+        },
+      ],
+    };
+
+    console.dir(options);
+
+    const chart = new ApexCharts(
+      document.querySelector("#resultsBarChart"),
+      options
+    );
+    chart.render();
+  }, [data, fieldName, numBars]);
+
+  return (
+    <div className="results-chart">
+      <div id="resultsBarChart" />
+    </div>
+  );
+}
+
+ResultsBarChart.propTypes = {
+  data: PropTypes.array,
+  fieldName: PropTypes.string,
+  numBars: PropTypes.number,
+};
+
+ResultsBarChart.defaultProps = {
+  data: [],
+  fieldName: "totalSent",
+  numBars: 5,
+};
+
+export default ResultsBarChart;
